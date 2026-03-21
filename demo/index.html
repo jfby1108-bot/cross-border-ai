@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>跨境电商 AI 产品描述生成器 - Demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #ec4899;
+            --dark: #1e1b4b;
+            --light: #f8fafc;
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(236, 72, 153, 0.1) 0%, transparent 40%);
+            animation: bgPulse 15s ease-in-out infinite;
+            z-index: -1;
+        }
+        
+        @keyframes bgPulse {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(2%, 2%) rotate(1deg); }
+            66% { transform: translate(-1%, 1%) rotate(-1deg); }
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #fff 0%, #c4b5fd 50%, #f0abfc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.85;
+            font-weight: 400;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 6px 16px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 16px;
+            animation: fadeIn 0.6s ease-out 0.2s both;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        /* Demo Card */
+        .demo-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease-out 0.3s both;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 18px 20px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.6);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tab::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+        
+        .tab:hover {
+            color: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .tab.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .tab.active::before {
+            width: 60%;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 32px;
+            animation: fadeIn 0.4s ease-out;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.95rem;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            font-size: 15px;
+            color: white;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .form-group select option {
+            background: #1e1b4b;
+            color: white;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+        }
+        
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        /* Button */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 16px 36px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
+            background-size: 200% 200%;
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4);
+            background-position: 100% 100%;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-full {
+            width: 100%;
+        }
+        
+        /* Features Grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        
+        .feature {
+            padding: 24px 20px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s ease-out both;
+        }
+        
+        .feature:nth-child(1) { animation-delay: 0.4s; }
+        .feature:nth-child(2) { animation-delay: 0.5s; }
+        .feature:nth-child(3) { animation-delay: 0.6s; }
+        
+        .feature:hover {
+            transform: translateY(-5px);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(139, 92, 246, 0.2) 100%);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2);
+        }
+        
+        .feature-icon {
+            font-size: 2.2rem;
+            margin-bottom: 12px;
+            display: block;
+        }
+        
+        .feature h4 {
+            color: white;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .feature p {
+            color: rgba(255, 255, 255, 0.65);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        /* Result Box */
+        .result-box {
+            margin-top: 32px;
+            padding: 24px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            border-left: 4px solid var(--primary);
+            animation: fadeInUp 0.5s ease-out;
+        }
+        
+        .result-box h3 {
+            color: white;
+            margin-bottom: 16px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .result-box .content {
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.8;
+            white-space: pre-wrap;
+            font-size: 0.95rem;
+        }
+        
+        .copy-btn {
+            margin-top: 16px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+        }
+        
+        /* Loading */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .loading.active {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid var(--primary);
+            border-right: 3px solid var(--secondary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+        }
+        
+        /* Example List */
+        .example-list {
+            margin-top: 20px;
+            display: grid;
+            gap: 12px;
+        }
+        
+        .example-item {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .example-item:hover {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: var(--primary);
+            transform: translateX(8px);
+        }
+        
+        .example-item h4 {
+            color: white;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+        
+        .example-item p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+        
+        /* Testimonials */
+        .testimonials {
+            margin-top: 40px;
+            animation: fadeInUp 0.8s ease-out 0.5s both;
+        }
+        
+        .testimonials h3 {
+            color: white;
+            text-align: center;
+            margin-bottom: 24px;
+            font-size: 1.3rem;
+        }
+        
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .testimonial-card {
+            padding: 24px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .testimonial-card .quote {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin-bottom: 16px;
+            font-style: italic;
+        }
+        
+        .testimonial-card .author {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .testimonial-card .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .testimonial-card .name {
+            color: white;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .testimonial-card .role {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.85rem;
+        }
+        
+        .testimonial-card .rating {
+            color: #fbbf24;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+        
+        /* About Section */
+        .about-section h3 {
+            color: white;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+        }
+        
+        .about-section p {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.9;
+            margin-bottom: 20px;
+        }
+        
+        .about-section ul {
+            list-style: none;
+            margin-bottom: 24px;
+        }
+        
+        .about-section ul li {
+            color: rgba(255, 255, 255, 0.85);
+            padding: 12px 0;
+            padding-left: 32px;
+            position: relative;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .about-section ul li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: bold;
+        }
+        
+        .contact-box {
+            padding: 24px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.15) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+        }
+        
+        .contact-box h4 {
+            color: white;
+            margin-bottom: 10px;
+        }
+        
+        .contact-box p {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+            animation: fadeIn 1s ease-out 0.8s both;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 16px;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .header p {
+                font-size: 1rem;
+            }
+            
+            .tab-content {
+                padding: 20px;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+            
+            .testimonial-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="badge">🚀 AI-Powered</div>
+            <h1>跨境电商 AI 产品描述生成器</h1>
+            <p>一键生成吸引人的产品描述，支持多语言翻译和 SEO 优化</p>
+        </div>
+        
+        <div class="demo-card">
+            <div class="tabs">
+                <div class="tab active" data-tab="generate">✨ AI 生成</div>
+                <div class="tab" data-tab="examples">📚 案例展示</div>
+                <div class="tab" data-tab="about">ℹ️ 关于</div>
+            </div>
+            
+            <!-- AI 生成页面 -->
+            <div class="tab-content active" id="generate">
+                <div class="features">
+                    <div class="feature">
+                        <span class="feature-icon">✨</span>
+                        <h4>智能生成</h4>
+                        <p>基于 AI 自动生成吸引人的产品描述</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">🌍</span>
+                        <h4>多语言支持</h4>
+                        <p>支持英语、法语、德语、西班牙语等</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">🎯</span>
+                        <h4>SEO 优化</h4>
+                        <p>内置关键词优化，提升搜索排名</p>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>产品名称</label>
+                    <input type="text" id="productName" placeholder="例如: 无线蓝牙耳机">
+                </div>
+                
+                <div class="form-group">
+                    <label>产品类别</label>
+                    <select id="productCategory">
+                        <option value="">请选择类别</option>
+                        <option value="electronics">电子产品</option>
+                        <option value="clothing">服装鞋帽</option>
+                        <option value="home">家居用品</option>
+                        <option value="beauty">美妆护肤</option>
+                        <option value="sports">运动户外</option>
+                        <option value="toys">玩具礼品</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>目标市场</label>
+                    <select id="targetMarket">
+                        <option value="en">美国 (Amazon)</option>
+                        <option value="uk">英国 (Amazon UK)</option>
+                        <option value="de">德国 (Amazon DE)</option>
+                        <option value="fr">法国 (Amazon FR)</option>
+                        <option value="es">西班牙 (Amazon ES)</option>
+                        <option value="jp">日本 (Amazon JP)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>产品特点（可选）</label>
+                    <textarea id="productFeatures" placeholder="输入产品的核心卖点，如：主动降噪、30小时续航、舒适佩戴..."></textarea>
+                </div>
+                
+                <button class="btn btn-full" onclick="generateDescription()">
+                    <span>🚀</span> 生成产品描述
+                </button>
+                
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>AI 正在生成中，请稍候...</p>
+                </div>
+                
+                <div class="result-box" id="resultBox" style="display: none;">
+                    <h3>📝 生成的产品描述</h3>
+                    <div class="content" id="resultContent"></div>
+                    <button class="copy-btn" onclick="copyResult()">📋 复制内容</button>
+                </div>
+            </div>
+            
+            <!-- 案例展示页面 -->
+            <div class="tab-content" id="examples">
+                <h3 style="color: white; margin-bottom: 20px;">📚 AI 生成案例展示</h3>
+                
+                <div class="example-list">
+                    <div class="example-item" onclick="loadExample('headphones')">
+                        <h4>🎧 无线蓝牙降噪耳机</h4>
+                        <p>美国 Amazon 市场 | 电子产品</p>
+                    </div>
+                    <div class="example-item" onclick="loadExample('skincare')">
+                        <h4>🧴 天然有机护肤套装</h4>
+                        <p>欧洲市场 | 美妆护肤</p>
+                    </div>
+                    <div class="example-item" onclick="loadExample('yoga')">
+                        <h4>🧘 瑜伽运动服套装</h4>
+                        <p>德国 Amazon 市场 | 运动户外</p>
+                    </div>
+                    <div class="example-item" onclick="loadExample('toys')">
+                        <h4>🎁 智能儿童早教玩具</h4>
+                        <p>日本 Amazon 市场 | 玩具礼品</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 关于页面 -->
+            <div class="tab-content" id="about">
+                <div class="about-section">
+                    <h3>🎯 关于跨境电商 AI 产品描述生成器</h3>
+                    <p>本产品是专门为跨境电商卖家打造的 AI 工具，帮助您快速生成符合目标市场习惯的产品描述。</p>
+                    <ul>
+                        <li>✨ 智能语义理解，准确把握产品卖点</li>
+                        <li>🌍 多语言翻译，适配全球主流电商平台</li>
+                        <li>🎯 SEO 关键词优化，提升搜索曝光</li>
+                        <li>⚡ 快速生成，大幅提升运营效率</li>
+                    </ul>
+                    <div class="contact-box">
+                        <h4>📞 联系我们</h4>
+                        <p>如需定制开发或企业版服务，请联系我们的团队</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 客户评价区域 -->
+        <div class="testimonials">
+            <h3>⭐ 用户评价</h3>
+            <div class="testimonial-grid">
+                <div class="testimonial-card">
+                    <div class="rating">★★★★★</div>
+                    <p class="quote">"这个工具帮我节省了太多时间！之前写一个产品描述要半小时，现在几分钟就搞定，而且质量更高。"</p>
+                    <div class="author">
+                        <div class="avatar">李</div>
+                        <div>
+                            <div class="name">李老板</div>
+                            <div class="role">Amazon 卖家 | 3年经验</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="rating">★★★★★</div>
+                    <p class="quote">"SEO 优化效果很明显！产品排名提升了不少，流量和转化率都涨了 30%+，强烈推荐！"</p>
+                    <div class="author">
+                        <div class="avatar">王</div>
+                        <div>
+                            <div class="name">王女士</div>
+                            <div class="role">Shopify 店主</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="rating">★★★★★</div>
+                    <p class="quote">"多语言功能太棒了！德语和法语版本写得很地道，欧洲客户都说我们的描述专业。"</p>
+                    <div class="author">
+                        <div class="avatar">张</div>
+                        <div>
+                            <div class="name">张先生</div>
+                            <div class="role">跨境电商总监</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2026 跨境电商 AI 项目开发部 | Demo Version 1.0</p>
+        </div>
+    </div>
+    
+    <script>
+        // Tab 切换
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                this.classList.add('active');
+                document.getElementById(this.dataset.tab).classList.add('active');
+            });
+        });
+        
+        // 示例数据
+        const examples = {
+            headphones: {
+                name: '无线蓝牙降噪耳机',
+                category: 'electronics',
+                market: 'en',
+                features: '主动降噪技术、30小时超长续航、蓝牙5.0连接、舒适耳罩设计',
+                result: `【Premium Wireless Noise-Canceling Headphones】
+
+Immerse yourself in crystal-clear audio with our state-of-the-art wireless headphones featuring advanced active noise cancellation technology. Designed for music lovers and professionals who demand the best.
+
+🔊 Key Features:
+• Advanced Active Noise Cancellation (ANC) blocks out distractions
+• 30-hour battery life keeps you powered all day
+• Bluetooth 5.0 ensures seamless wireless connectivity
+• Premium comfort ear cushions for extended listening sessions
+• Built-in microphone for crystal-clear calls
+
+🎵 Perfect for:
+- Commuting and travel
+- Work from home
+- Workout and exercise
+- Meditation and relaxation
+
+💎 Why Customers Love It:
+"These are hands down the best headphones I've ever owned. The noise cancellation is incredible!" - Sarah M., Verified Buyer
+
+📦 What's Included:
+1x Wireless Headphones
+1x Premium Carrying Case
+1x USB-C Charging Cable
+1x 3.5mm Audio Cable
+User Manual
+
+🎧 Experience music like never before. Order now and transform your audio experience!`
+            },
+            skincare: {
+                name: '天然有机护肤套装',
+                category: 'beauty',
+                market: 'de',
+                features: '100%天然成分、无动物测试、抗衰老、保湿修复',
+                result: `🌿 Naturkosmetik Anti-Aging Hautpflege-Set
+
+Entdecken Sie die Kraft der Natur mit unserem premium Bio-Hautpflegeset. Speziell entwickelt für anspruchsvolle Haut, die nur das Beste verdient.
+
+✨ Produktvorteile:
+• 100% natürliche Inhaltsstoffe aus kontrolliertem biologischem Anbau
+• Frei von Tierversuchen und schädlichen Chemikalien
+• Fortschrittliche Anti-Aging-Formulierung
+• Tiefenwirksame Feuchtigkeitspflege
+• Geeignet für alle Hauttypen
+
+🌸 Das Set enthält:
+1x Reinigungsmilch (200ml)
+1x Toner (150ml)
+1x Gesichtsserum (30ml)
+1x Tagescreme (50ml)
+1x Nachtcreme (50ml)
+
+💚 Unsere Verpflichtung:
+Hergestellt in Deutschland mit höchsten Qualitätsstandards. Dermatologisch getestet und für empfindliche Haut geeignet.
+
+⭐ Kundenbewertung:
+"Endlich eine Naturkosmetik, die funktioniert! Meine Haut sieht jünger und strahlender aus." - Maria K., Treue Kundin
+
+🌍 Umweltfreundlich:
+Recyclingbare Verpackung aus nachhaltigen Materialien.`
+            },
+            yoga: {
+                name: '瑜伽运动服套装',
+                category: 'sports',
+                market: 'de',
+                features: '高弹性面料、透气吸湿、速干设计、时尚修身',
+                result: `🧘 Premium Yoga-Fitness-Bekleidung Set
+
+Erleben Sie ultimativen Komfort und Stil mit unserem hochwertigen Yoga-Outfit. Designed für Frauen, die Wert auf Qualität und Ästhetik legen.
+
+🎯 Produktmerkmale:
+• Hochelastisches 4-Wege-Stretch-Material
+• Atmungsaktiv und fechtigkeitsableitend
+• Schnelltrocknende Technologie
+• Flache Nähte für maximalen Komfort
+• Modisches, schmeichelndes Design
+
+📏 Verfügbare Größen: XS - XL
+🌈 Farben: Klassisches Schwarz, Marineblau, Beige
+
+🧵 Materialzusammensetzung:
+- 87% Polyester
+- 13% Spandex
+
+✨ Das Set enthält:
+1x Sport-BH mit mittlerem Halt
+1x High-Waist Leggings
+1x Kurzarmsport-Shirt
+
+🏆 Warum unsere Kunden es lieben:
+"Der beste Yogaputi, den ich je hatte. Super bequem und sieht toll aus!" - Anna L., Yoga-Lehrerin
+
+Waschmaschinenfest bei 30°C. Nicht im Trockner trocknen.`
+            },
+            toys: {
+                name: '智能儿童早教玩具',
+                category: 'toys',
+                market: 'jp',
+                features: '智能语音交互、多语言学习、亲子互动、安全环保材质',
+                result: `🎁 スマート知育玩具 - 英語&日本語 バイリンガルバージョン
+
+お子の語学力と知性を伸ばす革新的な知育玩具です。AI技術を搭載したインタラクティブな学び伙伴！
+
+🌟  商品特徴:
+• スマート音声対話機能搭載
+• 英語と日本語のバイリンガル学習
+• 年齢に合わせた難易度調整
+• 親子で楽しめるインタラクティブモード
+• 安全安心のEPA承認素材使用
+
+📚  学习内容:
+• 基本英単語 500語以上
+• 日本語かな・かん字
+• 基本的な算数を学びます
+• 音楽とリズム感
+• 动物的知識と自然
+
+🎮 遊び方:
+1. 電源を入れてモードを選択
+2. 質問するとAIが優しく回答
+3. ゲームで遊びながら学習
+4. 保護者スマホで進捗確認
+
+✅ 安全性:
+• ASTM安全基準適合
+• ROHS環境基準適合
+• 飲み込まないサイズ設計
+• 角丸みで安全性バッチリ
+
+📦 包装内容:
+本体×1
+充電用USBケーブル×
+说明书（日本語・英語）
+学習カード套装
+
+🎮 対象年齢: 3歳〜8歳`
+            }
+        };
+        
+        // 加载示例
+        function loadExample(key) {
+            const example = examples[key];
+            document.getElementById('productName').value = example.name;
+            document.getElementById('productCategory').value = example.category;
+            document.getElementById('targetMarket').value = example.market;
+            document.getElementById('productFeatures').value = example.features;
+            
+            // 切换到生成页面
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelector('[data-tab="generate"]').classList.add('active');
+            document.getElementById('generate').classList.add('active');
+            
+            // 显示结果
+            document.getElementById('resultContent').textContent = example.result;
+            document.getElementById('resultBox').style.display = 'block';
+        }
+        
+        // 生成描述（模拟）
+        function generateDescription() {
+            const name = document.getElementById('productName').value;
+            const category = document.getElementById('productCategory').value;
+            const market = document.getElementById('targetMarket').value;
+            const features = document.getElementById('productFeatures').value;
+            
+            if (!name) {
+                alert('请输入产品名称');
+                return;
+            }
+            
+            // 显示加载动画
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('resultBox').style.display = 'none';
+            
+            // 模拟 AI 生成延迟
+            setTimeout(() => {
+                document.getElementById('loading').classList.remove('active');
+                
+                const marketNames = {
+                    'en': 'US (Amazon)',
+                    'uk': 'UK (Amazon UK)',
+                    'de': 'Germany (Amazon DE)',
+                    'fr': 'France (Amazon FR)',
+                    'es': 'Spain (Amazon ES)',
+                    'jp': 'Japan (Amazon JP)'
+                };
+                
+                const categoryNames = {
+                    'electronics': 'Electronics',
+                    'clothing': 'Fashion & Apparel',
+                    'home': 'Home & Garden',
+                    'beauty': 'Beauty & Skincare',
+                    'sports': 'Sports & Outdoors',
+                    'toys': 'Toys & Games'
+                };
+                
+                const result = `【${name}】
+
+✨ Premium Quality ${name} - ${categoryNames[category] || 'Product'}
+
+Discover the exceptional quality of our ${name}, designed to exceed your expectations. Crafted with attention to detail and built for performance.
+
+🌟 Key Features:
+${features || '• Premium quality materials\n• Durable construction\n• Modern design\n• Easy to use\n• Great value for money'}
+
+🎯 Perfect For:
+- Daily use
+- Gifting purposes
+- Personal enjoyment
+- Professional use
+
+💎 Why Choose Our Product:
+• Exceptional quality and craftsmanship
+• Customer satisfaction guaranteed
+• Fast shipping worldwide
+• 24/7 customer support
+
+📦 Package Includes:
+1x ${name}
+1x User Manual
+1x Quality Warranty Card
+
+🌍 Target Market: ${marketNames[market]}
+
+⭐ Customer Review:
+"Absolutely love this product! Exceeded my expectations in every way." - Verified Buyer
+
+🛒 Order Now and Experience the Difference!`;
+                
+                document.getElementById('resultContent').textContent = result;
+                document.getElementById('resultBox').style.display = 'block';
+            }, 2000);
+        }
+        
+        // 复制结果
+        function copyResult() {
+            const content = document.getElementById('resultContent').textContent;
+            navigator.clipboard.writeText(content).then(() => {
+                alert('复制成功！');
+            });
+        }
+    </script>
+</body>
+</html>

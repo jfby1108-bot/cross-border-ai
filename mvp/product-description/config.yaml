@@ -1,0 +1,199 @@
+# 产品描述生成配置
+# 跨境电商 MVP - Qwen API 配置
+
+# Qwen API 配置
+qwen:
+  api_key: "${QWEN_API_KEY}"  # 环境变量
+  base_url: "https://dashscope.aliyuncs.com/api/v1"
+  model: "qwen-turbo"
+  temperature: 0.7
+  max_tokens: 1000
+  timeout: 60
+
+# 默认设置
+defaults:
+  target_market: "美国"
+  language: "en"
+  tone: "professional"
+  include_seo: true
+
+# 支持的市场及平台
+markets:
+  - name: "美国"
+    platforms: ["Amazon", "eBay", "Walmart", "Target", "Best Buy"]
+    language: "en"
+    currency: "USD"
+  - name: "英国"  
+    platforms: ["Amazon UK", "eBay UK", "ASDA", "John Lewis"]
+    language: "en"
+    currency: "GBP"
+  - name: "德国"
+    platforms: ["Amazon DE", "eBay DE", "Otto", "Mediamarkt"]
+    language: "de"
+    currency: "EUR"
+  - name: "法国"
+    platforms: ["Amazon FR", "Cdiscount", "Fnac"]
+    language: "fr"
+    currency: "EUR"
+  - name: "西班牙"
+    platforms: ["Amazon ES", "Miravia", "El Corte Inglés"]
+    language: "es"
+    currency: "EUR"
+  - name: "意大利"
+    platforms: ["Amazon IT", "eBay IT", "MediaWorld"]
+    language: "it"
+    currency: "EUR"
+  - name: "日本"
+    platforms: ["Amazon JP", "Rakuten", "Yahoo! Japan", "Zozotown"]
+    language: "ja"
+    currency: "JPY"
+  - name: "澳大利亚"
+    platforms: ["Amazon AU", "eBay AU", "JB Hi-Fi"]
+    language: "en"
+    currency: "AUD"
+  - name: "加拿大"
+    platforms: ["Amazon CA", "eBay CA", "Best Buy Canada"]
+    language: "en"
+    currency: "CAD"
+  - name: "巴西"
+    platforms: ["Amazon BR", "Mercado Livre", "Magazine Luiza"]
+    language: "pt"
+    currency: "BRL"
+  - name: "印度"
+    platforms: ["Amazon IN", "Flipkart", "Myntra"]
+    language: "en"
+    currency: "INR"
+
+# 支持的语言 (ISO 639-1)
+languages:
+  - code: "en"
+    name: "English"
+    native: "English"
+    regions: ["US", "UK", "AU", "CA", "IN"]
+  - code: "de"
+    name: "German"
+    native: "Deutsch"
+    regions: ["DE", "AT", "CH"]
+  - code: "fr"
+    name: "French"
+    native: "Français"
+    regions: ["FR", "BE", "CA", "CH"]
+  - code: "es"
+    name: "Spanish"
+    native: "Español"
+    regions: ["ES", "MX", "AR", "CO"]
+  - code: "it"
+    name: "Italian"
+    native: "Italiano"
+    regions: ["IT", "CH"]
+  - code: "ja"
+    name: "Japanese"
+    native: "日本語"
+    regions: ["JP"]
+  - code: "zh"
+    name: "Chinese"
+    native: "中文"
+    regions: ["CN", "TW", "HK", "SG"]
+  - code: "pt"
+    name: "Portuguese"
+    native: "Português"
+    regions: ["BR", "PT"]
+  - code: "nl"
+    name: "Dutch"
+    native: "Nederlands"
+    regions: ["NL", "BE"]
+  - code: "ko"
+    name: "Korean"
+    native: "한국어"
+    regions: ["KR"]
+  - code: "ar"
+    name: "Arabic"
+    native: "العربية"
+    regions: ["SA", "AE", "EG"]
+  - code: "ru"
+    name: "Russian"
+    native: "Русский"
+    regions: ["RU", "KZ", "BY"]
+
+# 语气风格配置
+tones:
+  professional:
+    description: "专业、正式、权威"
+    use_case: "B2B、高端产品、技术产品"
+    characteristics: ["客观", "精准", "信息丰富"]
+  casual:
+    description: "轻松、友好、亲切"
+    use_case: "消费品、日用品、时尚"
+    characteristics: ["亲切", "生动", "易读"]
+  luxury:
+    description: "高端、奢华、精致"
+    use_case: "奢侈品、珠宝、手表、高端礼品"
+    characteristics: ["优雅", "精致", "品质导向"]
+  persuasive:
+    description: "有说服力、激励行动"
+    use_case: "促销、限时优惠、新品发布"
+    characteristics: ["号召力", "紧迫感", "价值导向"]
+
+# 社交媒体平台配置
+social_platforms:
+  instagram:
+    max_caption: 2200
+    hashtags_max: 30
+    style: "视觉导向，配图说明"
+  facebook:
+    max_caption: 63206
+    hashtags_max: 30
+    style: "互动导向，鼓励评论"
+  twitter:
+    max_caption: 280
+    hashtags_max: 10
+    style: "简洁有力，话题标签"
+  tiktok:
+    max_caption: 2200
+    hashtags_max: 10
+    style: "短视频配文，流行语"
+  pinterest:
+    max_caption: 500
+    hashtags_max: 20
+    style: "图片说明，风格导向"
+
+# 输出格式配置
+output:
+  include_bullet_points: true
+  include_marketing_copy: true
+  include_social_media: true
+  include_seo_keywords: true
+  
+  # 标题规则
+  title:
+    min_length: 50
+    max_length: 80
+    include_keywords: true
+    include_brand: false
+  
+  # 短描述规则
+  short_description:
+    min_length: 50
+    max_length: 100
+    focus: "核心卖点"
+  
+  # 长描述规则
+  long_description:
+    min_length: 150
+    max_length: 300
+    include: ["产品特点", "使用场景", "优势说明"]
+
+# SEO 配置
+seo:
+  keywords_min: 5
+  keywords_max: 10
+  keyword_density: 0.02
+  platforms:
+    amazon:
+      title_format: "{brand} {product_name} - {key_feature}"
+      bullet_points: 5
+    ebay:
+      title_format: "{product_name} {condition} {key_feature}"
+      bullet_points: 8
+    shopify:
+      title_format: "{product_name} | {key_feature}"

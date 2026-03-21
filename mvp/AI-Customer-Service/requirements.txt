@@ -1,0 +1,45 @@
+# 依赖列表
+
+# 核心依赖
+flask>=2.3.0
+pyyaml>=6.0
+
+# 邮件处理
+imap-tools>=0.6.0
+
+# 可选：AI 集成（生产环境启用）
+# openai>=1.0.0
+# qwen-utils>=1.0.0
+
+# 可选：日志
+# python-dotenv>=1.0.0
+
+# ============ 环境变量配置 ============
+
+# 邮件服务
+IMAP_HOST=imap.gmail.com
+IMAP_USER=your-email@gmail.com
+IMAP_PASSWORD=your-app-password
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@gmail.com
+SMTP_PASSWORD=your-app-password
+
+# AI 配置
+AI_MODEL=qwen
+AI_API_KEY=your-api-key
+AI_ENDPOINT=https://api.qwen.com/v1
+
+# 微信配置
+WECHAT_TOKEN=your-secret-token
+WECHAT_APPID=your-appid
+WECHAT_SECRET=your-secret
+
+# 可选配置
+REPLY_STYLE=professional  # professional, friendly, concise
+DEFAULT_LANGUAGE=en
+ENABLE_REVIEW=false
+FORWARD_TO_WECHAT=
+
+# 服务端口
+PORT=5000

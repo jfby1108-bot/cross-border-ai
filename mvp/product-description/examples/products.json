@@ -1,0 +1,286 @@
+{
+  "test_products": [
+    {
+      "id": "prod_001",
+      "product": {
+        "name": "Wireless Bluetooth Earbuds Pro",
+        "category": "Electronics > Audio > Headphones",
+        "sku": "WBE-001"
+      },
+      "features": [
+        "Active Noise Cancellation (ANC)",
+        "30-hour total battery life with charging case",
+        "Premium 13mm drivers for high-quality sound",
+        "Ergonomic in-ear design for comfortable fit",
+        "Intuitive touch controls",
+        "IPX5 water resistance",
+        "Fast charging support"
+      ],
+      "target_market": "美国",
+      "language": "en",
+      "tone": "professional",
+      "expected_formats": ["title", "short_description", "long_description", "seo_keywords"]
+    },
+    {
+      "id": "prod_002",
+      "product": {
+        "name": "Organic Green Tea Set",
+        "category": "Food & Beverage > Tea",
+        "sku": "OGT-2024"
+      },
+      "features": [
+        "100% organic green tea leaves",
+        "Hand-picked from organic farms",
+        "Rich in antioxidants",
+        "Natural jasmine fragrance",
+        "Individually wrapped tea bags",
+        "Sustainable packaging"
+      ],
+      "target_market": "欧洲",
+      "language": "de",
+      "tone": "casual",
+      "expected_formats": ["title", "short_description", "long_description", "seo_keywords"]
+    },
+    {
+      "id": "prod_003",
+      "product": {
+        "name": "Smart Fitness Watch X3",
+        "category": "Electronics > Wearables > Smartwatch",
+        "sku": "SFW-X3-BLK"
+      },
+      "features": [
+        "1.4\" AMOLED always-on display",
+        "Heart rate, SpO2, sleep tracking",
+        "GPS built-in",
+        "14-day battery life",
+        "5ATM water resistance",
+        "100+ sports modes",
+        "Smart notifications"
+      ],
+      "target_market": "日本",
+      "language": "ja",
+      "tone": "professional",
+      "expected_formats": ["title", "short_description", "long_description", "seo_keywords"]
+    },
+    {
+      "id": "prod_004",
+      "product": {
+        "name": "Premium Leather Handbag",
+        "category": "Fashion > Bags > Handbags",
+        "sku": "PLH-001"
+      },
+      "features": [
+        "Genuine Italian leather",
+        "Handcrafted by expert artisans",
+        "Multiple compartments",
+        "Adjustable shoulder strap",
+        "Gold-tone hardware",
+        "Dust bag included"
+      ],
+      "target_market": "法国",
+      "language": "fr",
+      "tone": "luxury",
+      "expected_formats": ["title", "short_description", "long_description", "seo_keywords"]
+    },
+    {
+      "id": "prod_005",
+      "product": {
+        "name": "Bamboo Kitchen Utensil Set",
+        "category": "Home & Kitchen > Cookware",
+        "sku": "BKS-12PC"
+      },
+      "features": [
+        "100% natural bamboo",
+        "Set of 12 pieces",
+        "Heat resistant",
+        "Eco-friendly",
+        "Durable and long-lasting",
+        "Gift box packaging"
+      ],
+      "target_market": "德国",
+      "language": "de",
+      "tone": "casual",
+      "expected_formats": ["title", "short_description", "long_description", "seo_keywords"]
+    },
+    {
+      "id": "prod_006",
+      "product": {
+        "name": "Kids Educational Tablet",
+        "category": "Electronics > Tablets > Kids",
+        "sku": "KET-7-WHT"
+      },
+      "features": [
+        "7-inch HD display",
+        "Parental control",
+        "Educational apps pre-installed",
+        "Durable kid-proof case",
+        "Long battery life",
+        "Age appropriate content"
+      ],
+      "target_market": "英国",
+      "language": "en",
+      "tone": "professional",
+      "expected_formats": ["title", "short_description", "long_description", "seo_keywords"]
+    },
+    {
+      "id": "prod_007",
+      "product": {
+        "name": "Ceramic Pour-Over Coffee Set",
+        "category": "Home & Kitchen > Coffee > Accessories",
+        "sku": "CPS-CRM-4PC"
+      },
+      "features": [
+        "Handmade ceramic dripper",
+        "Double-wall glass carafe",
+        "Heat-resistant design",
+        "4 cup capacity",
+        "Reusable filter",
+        "Modern minimalist design"
+      ],
+      "target_market": "澳大利亚",
+      "language": "en",
+      "tone": "casual",
+      "expected_formats": ["title", "short_description", "long_description", "seo_keywords"]
+    },
+    {
+      "id": "prod_008",
+      "product": {
+        "name": "Running Shoes Pro",
+        "category": "Sports > Running > Shoes",
+        "sku": "RSP-BLK-10"
+      },
+      "features": [
+        "Ultra-lightweight design",
+        "Air cushion technology",
+        "Breathable mesh upper",
+        "Anti-slip rubber outsole",
+        "Reflective details for night running",
+        "Available in multiple sizes"
+      ],
+      "target_market": "美国",
+      "language": "en",
+      "tone": "persuasive",
+      "expected_formats": ["title", "short_description", "long_description", "seo_keywords"]
+    }
+  ],
+  
+  "variant_tests": [
+    {
+      "id": "var_001",
+      "product": {
+        "name": "Cotton T-Shirt Classic",
+        "category": "Fashion > Apparel > T-Shirts",
+        "sku": "CTS-BAS"
+      },
+      "base_features": [
+        "100% organic cotton",
+        "Soft and comfortable",
+        "Pre-shrunk fabric",
+        "Reinforced stitching"
+      ],
+      "variants": [
+        {"color": "White", "size": "S"},
+        {"color": "White", "size": "M"},
+        {"color": "White", "size": "L"},
+        {"color": "Black", "size": "S"},
+        {"color": "Black", "size": "M"},
+        {"color": "Black", "size": "L"}
+      ],
+      "target_market": "美国",
+      "language": "en",
+      "tone": "casual"
+    }
+  ],
+  
+  "bullet_point_tests": [
+    {
+      "id": "bp_001",
+      "product_name": "Portable Power Bank 20000mAh",
+      "features": [
+        "20000mAh capacity",
+        "Fast charging 22.5W",
+        "Multiple ports (USB-A, USB-C)",
+        "LED power indicator",
+        "Compact design",
+        "Universal compatibility"
+      ],
+      "language": "en",
+      "tone": "professional",
+      "num_points": 5
+    }
+  ],
+  
+  "marketing_copy_tests": [
+    {
+      "id": "mc_001",
+      "product_name": "Wireless Earbuds Pro",
+      "features": [
+        "Active Noise Cancellation",
+        "30-hour battery life",
+        "Premium sound quality"
+      ],
+      "target_market": "美国",
+      "language": "en",
+      "copy_type": "social"
+    },
+    {
+      "id": "mc_002",
+      "product_name": "Organic Green Tea",
+      "features": [
+        "100% organic",
+        "Hand-picked",
+        "Rich in antioxidants"
+      ],
+      "target_market": "欧洲",
+      "language": "de",
+      "copy_type": "email"
+    }
+  ],
+  
+  "social_media_tests": [
+    {
+      "id": "sm_001",
+      "product_name": "Smart Watch X3",
+      "features": [
+        "GPS tracking",
+        "Heart rate monitor",
+        "14-day battery"
+      ],
+      "platform": "instagram",
+      "language": "en",
+      "tone": "casual"
+    },
+    {
+      "id": "sm_002",
+      "product_name": "Luxury Watch",
+      "features": [
+        "Swiss movement",
+        "Sapphire crystal",
+        "Leather strap"
+      ],
+      "platform": "instagram",
+      "language": "en",
+      "tone": "luxury"
+    }
+  ],
+  
+  "language_coverage_tests": [
+    {
+      "id": "lang_001",
+      "product_name": "Wireless Mouse",
+      "features": ["Ergonomic design", "Wireless connectivity", "Long battery life"],
+      "tests": [
+        {"language": "en", "market": "美国"},
+        {"language": "de", "market": "德国"},
+        {"language": "fr", "market": "法国"},
+        {"language": "es", "market": "西班牙"},
+        {"language": "it", "market": "意大利"},
+        {"language": "ja", "market": "日本"},
+        {"language": "pt", "market": "巴西"},
+        {"language": "nl", "market": "荷兰"},
+        {"language": "ko", "market": "韩国"},
+        {"language": "ru", "market": "俄罗斯"}
+      ]
+    }
+  ]
+}
