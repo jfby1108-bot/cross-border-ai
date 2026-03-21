@@ -44,6 +44,16 @@ def index():
 def health():
     return jsonify({"status": "healthy"})
 
+@app.route("/test-email")
+def test_email():
+    """手动触发邮件检查"""
+    print("🔧 手动触发邮件检查...")
+    try:
+        process_email_cycle()
+        return jsonify({"status": "done", "message": "邮件检查完成"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
 @dataclass
 class Email:
     subject: str
@@ -59,11 +69,14 @@ def connect_imap():
     """连接 IMAP 服务器"""
     try:
         import imaplib
+        print(f"🔌 连接 IMAP: {CONFIG['imap_host']}")
         mail = imaplib.IMAP4_SSL(CONFIG["imap_host"])
-        mail.login(CONFIG["imap_user"], CONFIG["imap_password"])
+        print(f"🔐 登录用户: {CONFIG['imap_user']}")
+        result = mail.login(CONFIG["imap_user"], CONFIG["imap_password"])
+        print(f"✅ IMAP 登录成功: {result}")
         return mail
     except Exception as e:
-        print(f"IMAP 连接失败: {e}")
+        print(f"❌ IMAP 连接失败: {e}")
         return None
 
 def fetch_unread_emails(mail, folder="inbox", limit=10) -> List[Email]:
