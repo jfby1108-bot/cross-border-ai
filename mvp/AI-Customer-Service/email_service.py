@@ -1,12 +1,18 @@
 # 邮件客服 MVP - 快速启动版
-# 包含：IMAP 收信 + SMTP 发信 + AI 回复
+# 包含：IMAP 收信 + SMTP 发信 + AI 回复 + Web Server
 
 import os
 import json
 import time
+import threading
 from datetime import datetime
 from typing import List, Optional
 from dataclasses import dataclass
+
+# Flask Web Server
+from flask import Flask, jsonify
+
+app = Flask(__name__)
 
 # 配置
 CONFIG = {
@@ -20,10 +26,23 @@ CONFIG = {
     "ai_model": os.getenv("AI_MODEL", "qwen"),
     "ai_api_key": os.getenv("AI_API_KEY", ""),
     "ai_endpoint": os.getenv("AI_ENDPOINT", "https://api.qwen.com/v1"),
-    "reply_style": os.getenv("REPLY_STYLE", "professional"),  # professional, friendly, concise
+    "reply_style": os.getenv("REPLY_STYLE", "professional"),
     "default_language": os.getenv("DEFAULT_LANGUAGE", "en"),
     "enable_review": os.getenv("ENABLE_REVIEW", "false").lower() == "true",
+    "check_interval": int(os.getenv("CHECK_INTERVAL", "60")),
 }
+
+@app.route("/")
+def index():
+    return jsonify({
+        "status": "ok",
+        "service": "SupportIQ Email Customer Service",
+        "time": datetime.now().isoformat()
+    })
+
+@app.route("/health")
+def health():
+    return jsonify({"status": "healthy"})
 
 @dataclass
 class Email:
@@ -115,14 +134,10 @@ def send_email(smtp, to_email: str, subject: str, body: str):
 
 def generate_ai_reply(email: Email) -> str:
     """调用 AI 生成回复"""
-    # 简化版：使用预设模板 + 基础关键词匹配
-    # 生产版：调用 Qwen/GPT API
-    
     body_lower = email.body.lower()
     subject_lower = email.subject.lower()
     combined = body_lower + " " + subject_lower
     
-    # 意图识别 + 回复模板
     if any(w in combined for w in ["order", "shipping", "delivery", "物流", "发货"]):
         return get_template("order")
     elif any(w in combined for w in ["refund", "return", "退货", "退款"]):
@@ -198,12 +213,10 @@ def process_email_cycle():
     """处理一轮邮件"""
     print(f"\n[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] 开始邮件处理...")
     
-    # 1. 连接 IMAP
     imap = connect_imap()
     if not imap:
         return
     
-    # 2. 获取未读邮件
     emails = fetch_unread_emails(imap)
     print(f"获取到 {len(emails)} 封未读邮件")
     
@@ -211,76 +224,53 @@ def process_email_cycle():
         imap.logout()
         return
     
-    # 3. 连接 SMTP
     smtp = connect_smtp()
     if not smtp:
         imap.logout()
         return
     
-    # 4. 处理每封邮件
     for email in emails:
         print(f"处理邮件: {email.subject[:50]}...")
         
-        # AI 生成回复
         reply_body = generate_ai_reply(email)
         reply_subject = f"Re: {email.subject}"
         
-        # 提取收件人邮箱
         import re
         match = re.search(r'[\w\.-]+@[\w\.-]+', email.from_email)
         to_email = match.group(0) if match else email.from_email
         
-        # 发送回复
         if CONFIG["enable_review"]:
             print(f"  [审核模式] 待发送: {reply_subject}")
-            # TODO: 写入审核队列
         else:
             if send_email(smtp, to_email, reply_subject, reply_body):
                 print(f"  ✅ 已回复: {to_email}")
             else:
                 print(f"  ❌ 发送失败: {to_email}")
     
-    # 5. 清理连接
     smtp.quit()
     imap.logout()
     print("邮件处理完成")
 
-def run_scheduler(interval_seconds=60):
-    """定时运行"""
-    print(f"🚀 邮件客服 MVP 启动 (间隔 {interval_seconds}s)")
-    print("按 Ctrl+C 停止")
-    
-    try:
-        while True:
+def email_scheduler():
+    """后台邮件定时检查"""
+    print(f"📧 邮件调度器启动 (间隔 {CONFIG['check_interval']}s)")
+    while True:
+        try:
             process_email_cycle()
-            time.sleep(interval_seconds)
-    except KeyboardInterrupt:
-        print("\n⏹️ 已停止")
+        except Exception as e:
+            print(f"调度器错误: {e}")
+        time.sleep(CONFIG["check_interval"])
 
-# ============ 快速测试 ============
+# ============ 启动 ============
 
 if __name__ == "__main__":
     import sys
     
-    if len(sys.argv) > 1 and sys.argv[1] == "--test":
-        # 测试模式
-        print("🧪 测试模式")
-        
-        test_email = Email(
-            subject="Question about shipping",
-            body="Hi, I want to know when my order will arrive? Order #12345",
-            from_email="test@example.com",
-            from_name="Test User",
-            date="",
-            message_id="test-001"
-        )
-        
-        reply = generate_ai_reply(test_email)
-        print("\n📧 测试邮件:")
-        print(f"  Subject: {test_email.subject}")
-        print(f"  Body: {test_email.body}")
-        print(f"\n🤖 AI 回复:")
-        print(reply)
-    else:
-        # 正常运行
-        run_scheduler()
+    # 启动后台邮件调度器
+    scheduler_thread = threading.Thread(target=email_scheduler, daemon=True)
+    scheduler_thread.start()
+    
+    # 启动 Flask Web Server
+    port = int(os.getenv("PORT", "5000"))
+    print(f"🌐 Web 服务器启动在端口 {port}")
+    app.run(host="0.0.0.0", port=port)
