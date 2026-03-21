@@ -82,32 +82,41 @@ def connect_imap():
 def fetch_unread_emails(mail, folder="inbox", limit=10) -> List[Email]:
     """获取未读邮件"""
     try:
-        mail.select(folder)
-        status, messages = mail.search(None, "UNSEEN")
-        if status != "OK":
-            return []
+        all_emails = []
         
-        email_ids = messages[0].split()[:limit]
-        emails = []
+        # 检查 Inbox 和 Spam 文件夹
+        for folder_name in ["inbox", "[Gmail]/Spam", "Spam"]:
+            try:
+                mail.select(folder_name)
+                status, messages = mail.search(None, "UNSEEN")
+                if status != "OK":
+                    continue
+                
+                email_ids = messages[0].split()[:limit]
+                
+                for eid in email_ids:
+                    _, msg_data = mail.fetch(eid, "(RFC822)")
+                    for response in msg_data:
+                        if isinstance(response, tuple):
+                            from email.parser import Parser
+                            parser = Parser()
+                            msg = parser.parsestr(response[1])
+                            
+                            email = Email(
+                                subject=msg.get("Subject", ""),
+                                body=msg.get_payload(decode=True).decode("utf-8", errors="ignore") if msg.get_payload() else "",
+                                from_email=msg.get("From", ""),
+                                from_name=msg.get("From", ""),
+                                date=msg.get("Date", ""),
+                                message_id=msg.get("Message-ID", "")
+                            )
+                            all_emails.append(email)
+                            print(f"📧 从 {folder_name} 收到邮件: {email.subject}")
+            except Exception as e:
+                print(f"⚠️ 检查文件夹 {folder_name} 失败: {e}")
+                continue
         
-        for eid in email_ids:
-            _, msg_data = mail.fetch(eid, "(RFC822)")
-            for response in msg_data:
-                if isinstance(response, tuple):
-                    from email.parser import Parser
-                    parser = Parser()
-                    msg = parser.parsestr(response[1])
-                    
-                    email = Email(
-                        subject=msg.get("Subject", ""),
-                        body=msg.get_payload(decode=True).decode("utf-8", errors="ignore") if msg.get_payload() else "",
-                        from_email=msg.get("From", ""),
-                        from_name=msg.get("From", ""),
-                        date=msg.get("Date", ""),
-                        message_id=msg.get("Message-ID", "")
-                    )
-                    emails.append(email)
-        return emails
+        return all_emails
     except Exception as e:
         print(f"获取邮件失败: {e}")
         return []
