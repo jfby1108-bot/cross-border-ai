@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SupportIQ - 跨境电商 AI 客服</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; font-size: 28px; margin-bottom: 10px; }
+        .subtitle { color: #666; margin-bottom: 30px; }
+        .badge {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .feature {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .feature-icon { font-size: 24px; margin-right: 15px; }
+        .feature-text h3 { font-size: 16px; color: #333; }
+        .feature-text p { font-size: 14px; color: #666; }
+        .demo-section { margin-top: 30px; }
+        .demo-section h2 { font-size: 20px; margin-bottom: 15px; color: #333; }
+        textarea, input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 10px;
+            font-family: inherit;
+        }
+        textarea:focus, input:focus { outline: none; border-color: #667eea; }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        button:hover { transform: translateY(-2px); }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+        .result {
+            background: #f0f9ff;
+            border: 2px solid #bae6fd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 13px;
+            display: none;
+        }
+        .result.show { display: block; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 15px; }
+        .tab {
+            padding: 8px 16px;
+            background: #e5e7eb;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .tab.active { background: #667eea; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .api-link {
+            display: inline-block;
+            background: #1f2937;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .api-link:hover { background: #374151; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="badge">🟢 在线</div>
+            <h1>⚡ SupportIQ</h1>
+            <p class="subtitle">跨境电商 AI 智能客服系统</p>
+            
+            <div class="feature">
+                <span class="feature-icon">📧</span>
+                <div class="feature-text">
+                    <h3>智能邮件回复</h3>
+                    <p>自动识别意图，30+ 语言切换，7×24 小时响应</p>
+                </div>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">💬</span>
+                <div class="feature-text">
+                    <h3>多平台客服</h3>
+                    <p>Amazon、Shopify、eBay 统一管理</p>
+                </div>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">🎯</span>
+                <div class="feature-text">
+                    <h3>精准意图识别</h3>
+                    <p>AI 智能分析客户需求，提升转化率</p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <a href="/openapi.json" class="api-link" target="_blank">📚 API 文档</a>
+                <a href="/docs" class="api-link" target="_blank">🔧 Swagger UI</a>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>🎮 在线演示</h2>
+            
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('email')">📧 邮件处理</div>
+                <div class="tab" onclick="switchTab('product')">📝 产品描述</div>
+                <div class="tab" onclick="switchTab('ai')">🤖 AI 对话</div>
+            </div>
+            
+            <!-- 邮件处理 -->
+            <div id="email" class="tab-content active">
+                <input type="text" id="emailSubject" placeholder="邮件主题">
+                <textarea id="emailBody" rows="4" placeholder="邮件内容"></textarea>
+                <input type="text" id="emailFrom" placeholder="客户邮箱">
+                <button onclick="testEmail()">测试邮件处理</button>
+                <div class="result" id="emailResult"></div>
+            </div>
+            
+            <!-- 产品描述 -->
+            <div id="product" class="tab-content">
+                <input type="text" id="productName" placeholder="产品名称，如：Wireless Earbuds">
+                <input type="text" id="productCategory" placeholder="类别，如：Electronics">
+                <input type="text" id="productFeatures" placeholder="特点，如：noise cancellation, 30h battery">
+                <button onclick="testProduct()">生成产品描述</button>
+                <div class="result" id="productResult"></div>
+            </div>
+            
+            <!-- AI 对话 -->
+            <div id="ai" class="tab-content">
+                <textarea id="aiMessage" rows="3" placeholder="输入你想问的问题..."></textarea>
+                <button onclick="testAI()">发送问题</button>
+                <div class="result" id="aiResult"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = window.location.origin;
+        
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelector(`.tab[onclick="switchTab('${tab}')"]`).classList.add('active');
+            document.getElementById(tab).classList.add('active');
+        }
+        
+        async function testEmail() {
+            const result = document.getElementById('emailResult');
+            result.classList.add('show');
+            result.textContent = '处理中...';
+            
+            try {
+                const res = await fetch(API_BASE + '/api/email/process', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        subject: document.getElementById('emailSubject').value,
+                        body: document.getElementById('emailBody').value,
+                        from_email: document.getElementById('emailFrom').value
+                    })
+                });
+                const data = await res.json();
+                result.textContent = JSON.stringify(data, null, 2);
+            } catch (e) {
+                result.textContent = '错误: ' + e.message;
+            }
+        }
+        
+        async function testProduct() {
+            const result = document.getElementById('productResult');
+            result.classList.add('show');
+            result.textContent = '生成中...';
+            
+            try {
+                const res = await fetch(API_BASE + '/api/product/describe', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        product_name: document.getElementById('productName').value,
+                        category: document.getElementById('productCategory').value,
+                        features: document.getElementById('productFeatures').value.split(',').map(s => s.trim()),
+                        target_market: 'USA',
+                        language: 'en'
+                    })
+                });
+                const data = await res.json();
+                result.textContent = JSON.stringify(data, null, 2);
+            } catch (e) {
+                result.textContent = '错误: ' + e.message;
+            }
+        }
+        
+        async function testAI() {
+            const result = document.getElementById('aiResult');
+            result.classList.add('show');
+            result.textContent = '思考中...';
+            
+            try {
+                const res = await fetch(API_BASE + '/api/ai/reply', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        message: document.getElementById('aiMessage').value
+                    })
+                });
+                const data = await res.json();
+                result.textContent = JSON.stringify(data, null, 2);
+            } catch (e) {
+                result.textContent = '错误: ' + e.message;
+            }
+        }
+    </script>
+</body>
+</html>
